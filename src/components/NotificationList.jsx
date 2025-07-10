@@ -1,10 +1,31 @@
+import React, { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import NotificationItem from './NotificationItem';
 import { useNotifications } from '../hooks/useNotifications';
+import { useSocket } from '../Context/SocketProvider';
 
 const NotificationList = () => {
   const { data: notifications, isLoading, isError } = useNotifications();
+  const socket = useSocket();
+  const queryClient = useQueryClient();
 
+  useEffect(() => {
+    if (!socket) return;
 
+    const handler = (notif) => {
+      // 1) Show an alert for each incoming notification
+      alert(`New notification:\n${notif.message}`);
+
+      // 2) Update the react-query cache so the UI list re-renders
+      queryClient.setQueryData(['notifications'], (old = []) => [
+        notif,
+        ...old,
+      ]);
+    };
+
+    socket.on('notification', handler);
+    return () => socket.off('notification', handler);
+  }, [socket, queryClient]);
 
   if (isLoading) {
     return (

@@ -2,17 +2,16 @@ import axios from 'axios';
 import { BaseUrl } from './BaseUrl';
 
 const axiosInstance = axios.create({
-  baseURL: BaseUrl, // Your backend API base URL
+  baseURL: BaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Intercept requests to add Authorization token if available
 axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');  // Retrieve token from localStorage
+  const token = localStorage.getItem('token');  
   if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;  // Attach token to request header
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
   return config;
 }, (error) => {

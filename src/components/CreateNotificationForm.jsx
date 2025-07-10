@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react';
+import {  useRef } from 'react';
 import { useCreateNotification } from '../hooks/useNotifications';
 import { useEffect } from 'react';
 import { useGetUser } from '../services/auth';
 
 const CreateNotificationForm = () => {
-    const { data: me, isLoading } = useGetUser();
+    const { data: me,  } = useGetUser();
 
   const { mutate, isSuccess } = useCreateNotification();
   const formRef = useRef(); // Create a reference for the form

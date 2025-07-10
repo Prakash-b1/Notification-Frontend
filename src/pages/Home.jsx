@@ -3,19 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import CreateNotificationForm from '../components/CreateNotificationForm';
 import NotificationList from '../components/NotificationList';
 import { useGetUser } from '../services/auth';
-import { useSocket } from '../Context/SocketContext';
 
 const Home = () => {
   const { data, isLoading, isError } = useGetUser();  // Fetch logged-in user data
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-  const { socket, registerUser } = useSocket();
-  
-  useEffect(() => {
-    if (data?.id) {
-      registerUser(data.id);
-    }
-  }, [data, registerUser]);
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
