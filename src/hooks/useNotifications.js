@@ -1,37 +1,30 @@
-// src/hooks/useNotifications.js
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import toast  from 'react-hot-toast';
 import { fetchNotifications, createNotification } from '../services/notifications';
+import toast from 'react-hot-toast';
 
+// Fetch notifications using useQuery
 export const useNotifications = () => {
-  return useQuery(
-    ['notifications'],
-    fetchNotifications,
-    {
-      // show an error toast if fetching fails
-      onError: () => {
-        toast.error('Failed to load notifications');
-      }
-    }
-  );
+  return useQuery({
+    queryKey: ['notifications'],  // Unique key for caching notifications
+    queryFn: fetchNotifications,  // Fetch function to call
+  });
 };
 
+// Create a new notification using useMutation
 export const useCreateNotification = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient();  // Access queryClient to manage caching and refetching
 
-  return useMutation(
-    createNotification,
-    {
-      onSuccess: () => {
-        toast.success('Notification created!');
-        // refresh list
-        queryClient.invalidateQueries(['notifications']);
-      },
-      onError: (err) => {
-        // try to pull a useful server message, or fallback
-        const msg = err.response?.data?.message || 'Could not create notification';
-        toast.error(msg);
-      }
-    }
-  );
+  return useMutation({
+    mutationFn: createNotification,  // Mutation function to create a notification
+    onSuccess: (data) => {
+      // console.log('Notification created successfully:', data);
+      toast.success('Notification created successfully!');  // Show success toast notification
+      
+      // Refetch the 'notifications' query after the notification is created
+      queryClient.invalidateQueries(['notifications']);  // This triggers a refetch of the 'notifications' query
+    },
+    onError: (error) => {
+      console.error('Error creating notification:', error);
+    },
+  });
 };
