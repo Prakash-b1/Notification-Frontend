@@ -11,3 +11,12 @@ npm start
 
 The React app will open at http://localhost:5173.
 
+Creds 
+
+Manager
+email:test@gmail.com
+paass:password123
+
+user
+email:user@gmail.com
+pass:user@123
