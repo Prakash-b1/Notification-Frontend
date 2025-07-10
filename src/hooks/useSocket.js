@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
+import { BaseUrl } from '../utils/BaseUrl';
 
 let socket;
 
@@ -7,7 +8,7 @@ export const useSocket = () => {
   useEffect(() => {
     // Initialize socket connection if not already initialized
     if (!socket) {
-      socket = io('http://localhost:5000/api');
+      socket = io(BaseUrl);
       socket.connect();
       console.log("Socket connected");
     }
