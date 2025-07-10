@@ -1,31 +1,33 @@
-import React, { useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
 import NotificationItem from './NotificationItem';
 import { useNotifications } from '../hooks/useNotifications';
 import { useSocket } from '../Context/SocketProvider';
 
 const NotificationList = () => {
-  const { data: notifications, isLoading, isError } = useNotifications();
+  // 1) Use your existing hook
+  const { data: initialNotifications, isLoading, isError } = useNotifications();
   const socket = useSocket();
-  const queryClient = useQueryClient();
 
+  // 2) Local state to manage the list
+  const [notifications, setNotifications] = useState([]);
+
+  // 3) When your hook’s data arrives, seed the local state
+  useEffect(() => {
+    if (initialNotifications) {
+      setNotifications(initialNotifications);
+    }
+  }, [initialNotifications]);
+
+  // 4) Listen for real-time updates and prepend them
   useEffect(() => {
     if (!socket) return;
-
     const handler = (notif) => {
-      // 1) Show an alert for each incoming notification
       alert(`New notification:\n${notif.message}`);
-
-      // 2) Update the react-query cache so the UI list re-renders
-      queryClient.setQueryData(['notifications'], (old = []) => [
-        notif,
-        ...old,
-      ]);
+      setNotifications(prev => [notif, ...prev]);
     };
-
     socket.on('notification', handler);
     return () => socket.off('notification', handler);
-  }, [socket, queryClient]);
+  }, [socket]);
 
   if (isLoading) {
     return (
@@ -47,7 +49,7 @@ const NotificationList = () => {
   return (
     <div className="space-y-6">
       {notifications?.length > 0 ? (
-        notifications.map((notification) => (
+        notifications?.map(notification => (
           <NotificationItem key={notification._id} notification={notification} />
         ))
       ) : (
